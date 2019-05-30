@@ -1,0 +1,69 @@
+﻿
+@{
+    ViewBag.Title = "display";
+}
+
+<h2>display</h2>
+<div>
+    <h2>Employee json Get</h2>
+    <table>
+        <tr>
+            <td>Id:  </td>
+            <td><p type="text" id="prodId" size="5"></p></td>
+        </tr>
+        <tr>
+            <td>Name:  </td>
+            <td><p type="text" id="prodName" size="5"></p></td>
+        </tr>
+        <tr>
+            <td>Salary:  </td>
+            <td><p type="text" id="prodSalary" size="5"></p></td>
+        </tr>
+    </table>
+
+    <div>
+        <h2>Search  by  Name</h2>
+        <p> Name: </p>
+        <input type="text" id="NameID" size="5" />
+        <input type="button" id="btnSearch" value="Search" />
+        <ul id="lstProducts"></ul>
+    </div>
+
+</div>
+
+<script>
+    var IntervalTime = @Session["time"] * 1000
+    myTimer = (function () {
+        $.post( "@Url.Action("GetEmployee")").done(function (xml) {
+                var xmlDoc = $.parseXML( xml ),
+                $xml = $( xmlDoc ),
+                FirstName = $xml.find( "FirstName" ).text();
+                LastName = $xml.find( "LastName" ).text();
+                Salary = $xml.find("Salary").text();
+
+                $("#prodId").text(FirstName);
+                $("#prodName").text(LastName);
+                $("#prodSalary").text(Salary);
+
+        });
+    });
+
+    setInterval(myTimer, IntervalTime);
+    myTimer();
+
+    $("#btnSearch").click(function () {
+        var input = {
+            name: $("#NameID").val(),
+        };
+        $.post("@Url.Action("Search", "First")", input).done(function (data) {
+            var xmlDoc = $.parseXML(data),
+                $xml = $(xmlDoc),
+                FirstName = $xml.find("FirstName").text();
+            LastName = $xml.find("LastName").text();
+            Salary = $xml.find("Salary").text();
+
+            $("#lstProducts").append("<li>" + FirstName + " " + LastName + " : $" + Salary + "</li>");
+        });
+    });
+
+</script>
