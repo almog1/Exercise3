@@ -1,9 +1,33 @@
 ﻿
 @{
     ViewBag.Title = "displayPicture";
-    var dosyaYolu = @Url.Content("~/App_Data/export-map-share.png");
+    var dosyaYolu = @Url.Content("~/export-map-share.png");
 }
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+        }
 
+        .bg {
+            /* The image used */
+            background-image: url('../../export-map-share.png');
+            background-size:100% 100%;
+            /* Full height */
+            /* Center and scale the image nicely */
+            background-repeat: no-repeat;
+        }
+    </style>
+</head>
+<body>
 
-<h2>displayPicture</h2>
-<img src="@dosyaYolu" />
+    <div class="bg"></div>
+
+    <p>This example creates a full page background image. Try to resize the browser window to see how it always will cover the full screen (when scrolled to top), and that it scales nicely on all screen sizes.</p>
+
+</body>
+</html>
