@@ -31,11 +31,12 @@ namespace Exercise3.Controllers
             return View();
         }
 
+        //first mission - gets a point and draw it on the map
         [HttpGet]
         public ActionResult displayPicture(string ip, string port)
         {
-            ViewBag.Lon = 1000;
-            ViewBag.Lat = 1000;
+            ViewBag.Lon = -157;
+            ViewBag.Lat = 21;
             return View();
         }
 

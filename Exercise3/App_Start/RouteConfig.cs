@@ -15,8 +15,8 @@ namespace Exercise3
 
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            routes.MapRoute("displayPicture", "displayPicture/{ip}/{port}",
-            defaults: new { controller = "First", action = "displayPicture" });
+            routes.MapRoute("displayPicture", "display/{ip}/{port}",
+           defaults: new { controller = "First", action = "displayPicture" });
 
             routes.MapRoute("display", "display/{ip}/{port}/{time}",
             defaults: new { controller = "First", action = "display" });
