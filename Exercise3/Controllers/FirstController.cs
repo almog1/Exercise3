@@ -29,13 +29,12 @@ namespace Exercise3.Controllers
             InfoModel.Instance.port = port.ToString();
             InfoModel.Instance.time = time;
 
-            InfoModel.Instance.ReadData("Dor");
-
             Session["time"] = time;
         
             return View();
         }
 
+        //first mission - gets a point and draw it on the map
         [HttpGet]
         public ActionResult connectServer(string ip, int port)
         {
@@ -57,8 +56,8 @@ namespace Exercise3.Controllers
         [HttpGet]
         public ActionResult displayPicture(string ip, string port)
         {
-            ViewBag.Lon = 100;
-            ViewBag.Lat = 100;
+            ViewBag.Lon = -157;
+            ViewBag.Lat = 21;
             return View();
         }
 
