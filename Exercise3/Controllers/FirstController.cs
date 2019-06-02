@@ -7,6 +7,9 @@ using System.Web;
 using System.Web.Mvc;
 using System.Xml;
 
+// path lon /position/longitude-deg
+// path lan /position/latitude-deg
+
 namespace Exercise3.Controllers
 {
     public class FirstController : Controller
@@ -34,10 +37,58 @@ namespace Exercise3.Controllers
         }
 
         [HttpGet]
+        public ActionResult connectServer(string ip, int port)
+        {
+            TcpCommands.Instance.ip = ip;
+            TcpCommands.Instance.port = port;
+           // TcpCommands.Instance.time = time;
+
+            TcpCommands.Instance.ConnectToServer();
+            TcpCommands.Instance.GetValues(FlyInformation.LON_PATH);
+            TcpCommands.Instance.GetValues(FlyInformation.LAT_PATH);
+
+           //InfoModel.Instance.ReadData("Dor");
+
+          //  Session["time"] = time;
+
+            return View();
+        }
+
+        [HttpGet]
         public ActionResult displayPicture(string ip, string port)
         {
-           
+            ViewBag.Lon = 100;
+            ViewBag.Lat = 100;
             return View();
+        }
+
+        [HttpPost]
+        public string GetFlyInfo()
+        {
+            var info = TcpCommands.Instance.flyInformation;
+
+            info.lon = TcpCommands.Instance.GetValues(FlyInformation.LON_PATH);
+            info.lat = TcpCommands.Instance.GetValues(FlyInformation.LAT_PATH);
+            
+            return FlyInfoToXml(info);
+        }
+        
+        private string FlyInfoToXml(FlyInformation info)
+        {
+            //Initiate XML stuff
+            StringBuilder sb = new StringBuilder();
+            XmlWriterSettings settings = new XmlWriterSettings();
+            XmlWriter writer = XmlWriter.Create(sb, settings);
+
+            writer.WriteStartDocument();
+            writer.WriteStartElement("FlyInfo");
+
+            info.ToXml(writer);
+
+            writer.WriteEndElement();
+            writer.WriteEndDocument();
+            writer.Flush();
+            return sb.ToString();
         }
 
         [HttpPost]
@@ -67,7 +118,6 @@ namespace Exercise3.Controllers
             writer.Flush();
             return sb.ToString();
         }
-
 
         // POST: First/Search
         [HttpPost]
