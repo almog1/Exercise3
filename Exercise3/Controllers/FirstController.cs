@@ -26,8 +26,6 @@ namespace Exercise3.Controllers
             InfoModel.Instance.port = port.ToString();
             InfoModel.Instance.time = time;
 
-            InfoModel.Instance.ReadData("Dor");
-
             Session["time"] = time;
         
             return View();
@@ -36,7 +34,8 @@ namespace Exercise3.Controllers
         [HttpGet]
         public ActionResult displayPicture(string ip, string port)
         {
-           
+            ViewBag.Lon = 1000;
+            ViewBag.Lat = 1000;
             return View();
         }
 

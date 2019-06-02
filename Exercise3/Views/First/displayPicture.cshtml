@@ -5,5 +5,31 @@
 }
 
 
-<h2>ttake me to heaven!!!/
-<body background="~/export-map-share.png" style="background-size:100% 100%; background-attachment:fixed">
+    <!DOCTYPE html>
+    <html>
+    <body background="~/export-map-share.png" style="background-size:100% 100%; background-attachment:fixed">
+        <canvas id="myCanvas" style="background-size:100% 100%; top:0; left:0; margin:0"></canvas>
+        <script>
+        window.onload = function () {
+            var c = document.getElementById("myCanvas");
+            c.width = window.innerWidth;
+            c.height = window.innerHeight;
+            c.style.position = "absolute";
+            var ctx = c.getContext("2d");
+            var lon = @ViewBag.Lon;
+            var lat = @ViewBag.Lat;
+            var normalizedLon = ((lon + 180) * (c.width / 360));
+            var normalizedLat = ((lat + 90) * (c.height / 180));
+            ctx.beginPath();
+            ctx.lineWidth = 2;
+            ctx.arc(normalizedLon, normalizedLat, 4, 0, Math.PI * 2);
+            ctx.fillStyle = "Red";
+            ctx.fill();
+            ctx.strokeStyle = "Blue";
+            ctx.stroke();
+            ctx.closePath();
+        }
+        </script>
+    </body>
+</html>
+
