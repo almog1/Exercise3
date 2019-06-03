@@ -32,8 +32,10 @@ namespace Exercise3.Models
             Employee = new Employee();
         }
 
+        //the name of the text with the data from the simulator
         public const string SCENARIO_FILE = "~/App_Data/{0}.txt";           // The Path of the Secnario
 
+        //save the data drom the file
         public void ReadData(string name)
         {
             string path = HttpContext.Current.Server.MapPath(String.Format(SCENARIO_FILE, name));
