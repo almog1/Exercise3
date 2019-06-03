@@ -1,0 +1,42 @@
+﻿
+@{
+    ViewBag.Title = "connectServer";
+}
+
+<h2>connectServer</h2>
+
+<div>
+    <h2>Fly json Get</h2>
+    <table>
+        <tr>
+            <td>Lon Value:  </td>
+            <td><p type="text" id="lonVal" size="5"></p></td>
+        </tr>
+        <tr>
+            <td>Lat value:  </td>
+            <td><p type="text" id="latVal" size="5"></p></td>
+        </tr>
+    </table>
+
+</div>
+
+<script src="Scripts/jquery-3.2.1.js"></script>
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="Scripts/bootstrap.js"></script>
+
+<script>
+    var myTimer = (function () {
+        $.post("@Url.Action("GetFlyInfo")").done(function (xml) {
+            var xmlDoc = $.parseXML(xml),
+                $xml = $(xmlDoc),
+                LONVAL = $xml.find("LonInfo").text();
+                LATVAL = $xml.find("LatInfo").text();
+
+            $("#lonVal").text(LONVAL);
+            $("#latVal").text(LATVAL);
+        });
+    });
+
+    myTimer();
+
+</script>

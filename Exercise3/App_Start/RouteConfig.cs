@@ -18,8 +18,11 @@ namespace Exercise3
             routes.MapRoute("displayPicture", "display/{ip}/{port}",
             defaults: new { controller = "First", action = "displayPicture" });
 
-            routes.MapRoute("displayWay", "display/{ip}/{port}/{time}",
-            defaults: new { controller = "First", action = "displayWay" });
+            routes.MapRoute("connectServer", "displayConn/{ip}/{port}",
+            defaults: new { controller = "First", action = "connectServer" });
+
+            routes.MapRoute("display", "display/{ip}/{port}/{time}",
+            defaults: new { controller = "First", action = "display" });
 
             routes.MapRoute(
                 name: "Default",
