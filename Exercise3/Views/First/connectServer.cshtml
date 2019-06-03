@@ -25,6 +25,8 @@
 <script src="Scripts/bootstrap.js"></script>
 
 <script>
+    var IntervalTime = @Session["time"] * 1000 ;
+        
     var myTimer = (function () {
         $.post("@Url.Action("GetFlyInfo")").done(function (xml) {
             var xmlDoc = $.parseXML(xml),
@@ -36,7 +38,7 @@
             $("#latVal").text(LATVAL);
         });
     });
-
+    setInterval(myTimer, IntervalTime);
     myTimer();
 
 </script>

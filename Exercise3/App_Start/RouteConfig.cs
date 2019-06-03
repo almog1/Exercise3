@@ -22,7 +22,7 @@ namespace Exercise3
             defaults: new { controller = "First", action = "connectServer" });
 
             routes.MapRoute("display", "display/{ip}/{port}/{time}",
-            defaults: new { controller = "First", action = "display" });
+            defaults: new { controller = "First", action = "displayWay" });
 
             routes.MapRoute(
                 name: "Default",

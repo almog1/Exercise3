@@ -32,7 +32,7 @@
 </div>
 
 <script>
-    var IntervalTime = @Session["time"] * 1000
+    var IntervalTime = @Session["time"] * 1000;
     myTimer = (function () {
         $.post( "@Url.Action("GetEmployee")").done(function (xml) {
                 var xmlDoc = $.parseXML( xml ),

@@ -25,13 +25,19 @@ namespace Exercise3.Controllers
 
         //first mission - gets a point and draw it on the map
         [HttpGet]
-        public ActionResult displayPicture(string ip, string port)
+        public ActionResult displayPicture(string ip, int port)
         {
             //need to save ip and port
+            TcpCommands.Instance.ip = ip;
+            TcpCommands.Instance.port = port;
+
             //need to check if we connected already 
+            TcpCommands.Instance.ConnectToServer();
+
             //saves alements in viewBag
-            ViewBag.Lon = -157;
-            ViewBag.Lat = 21;
+            ViewBag.Lon = TcpCommands.Instance.GetValues(FlyInformation.LON_PATH);
+            ViewBag.Lat = TcpCommands.Instance.GetValues(FlyInformation.LAT_PATH);
+            
             return View();
         }
 
@@ -44,12 +50,12 @@ namespace Exercise3.Controllers
             // TcpCommands.Instance.time = time;
 
             TcpCommands.Instance.ConnectToServer();
-            TcpCommands.Instance.GetValues(FlyInformation.LON_PATH);
-            TcpCommands.Instance.GetValues(FlyInformation.LAT_PATH);
+        //    TcpCommands.Instance.GetValues(FlyInformation.LON_PATH);
+          //  TcpCommands.Instance.GetValues(FlyInformation.LAT_PATH);
 
             //InfoModel.Instance.ReadData("Dor");
 
-            //  Session["time"] = time;
+              Session["time"] = 4;
 
             return View();
         }
@@ -61,9 +67,12 @@ namespace Exercise3.Controllers
             // InfoModel.Instance.ip = ip;
             // InfoModel.Instance.port = port.ToString();
             // InfoModel.Instance.time = time;
+            TcpCommands.Instance.ip = ip;
+            TcpCommands.Instance.port = port;
+            TcpCommands.Instance.ConnectToServer();
 
-            ViewBag.Lon = -157;
-            ViewBag.Lat = 21;
+            //ViewBag.Lon = -157;
+            //ViewBag.Lat = 21;
             Session["time"] = time;
 
             return View();
@@ -75,8 +84,30 @@ namespace Exercise3.Controllers
         {
             var info = TcpCommands.Instance.flyInformation;
 
-            info.lon = TcpCommands.Instance.GetValues(FlyInformation.LON_PATH);
-            info.lat = TcpCommands.Instance.GetValues(FlyInformation.LAT_PATH);
+            if (TcpCommands.Instance.IsConnect == false)
+            {
+               // TcpCommands.Instance.ConnectToServer();
+            }
+            else
+            {
+
+                info.lon = TcpCommands.Instance.GetValues(FlyInformation.LON_PATH);
+                info.lat = TcpCommands.Instance.GetValues(FlyInformation.LAT_PATH);
+            }
+       /*     info.lon = info.lon - 20;
+            if(info.lon < -180)
+            {
+                info.lon = -30;
+            }
+            info.lat = info.lat + 15;
+            if (info.lat>90)
+            {
+                info.lat = 10;
+            }
+            */
+
+          //  ViewBag.lon = TcpCommands.Instance.GetValues(FlyInformation.LON_PATH);
+           // ViewBag.lat = 
 
             return FlyInfoToXml(info);
         }

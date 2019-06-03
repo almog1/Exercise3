@@ -37,6 +37,9 @@ namespace Exercise3.Models
             //cretae new tcp commands - one time
             IsConnect = false;
             flyInformation = new FlyInformation();
+
+            flyInformation.lon = -157;
+            flyInformation.lat = 21;
         }
 
         private bool _isConnect;
@@ -75,7 +78,7 @@ namespace Exercise3.Models
                 Client = new TcpClient();
                 Client.Connect(ep); //connecting as client to the server
                                     //change to connected
-                
+                //Client.Connected          check if conected??
                 IsConnect = true; //succed to connect
             }
             catch (SocketException)
@@ -94,7 +97,8 @@ namespace Exercise3.Models
             {
                 //open thread for get lat & lon
                 //new Thread(() =>
-               // {
+                // {
+                try {
                     byte[] sendBuffer = new byte[1024];
                     byte[] getBuffer = new byte[1024];
                     int readed = 0;
@@ -112,19 +116,27 @@ namespace Exercise3.Models
                     readed = stream.Read(getBuffer, 0, getBuffer.Length);
                     string received = Encoding.ASCII.GetString(getBuffer, 0, readed);
                     Console.WriteLine("Response from client: {0}", received);
-               //     string[] words = received.Split(' ');
+                    //     string[] words = received.Split(' ');
                     string[] wordsSecond = received.Split('\'');
 
-                val = Convert.ToDouble(wordsSecond[1]);
+                    val = Convert.ToDouble(wordsSecond[1]);
                     //do
                     // {
                     //     int read = stream.Read(getBuffer, readed, getBuffer.Length - readed);
                     //   readed += read;
                     // } while (Client.GetStream().DataAvailable);
-                  //  Thread.Sleep(2000);
-                    
-                //}).Start();
-            }
+                    //  Thread.Sleep(2000);
+
+                    //}).Start();
+                }
+                catch (Exception e)
+                {
+                    //close the connetion
+                    Client.Close();
+                    IsConnect = false;
+                 
+                }
+               }
             return val;
         }
     }
