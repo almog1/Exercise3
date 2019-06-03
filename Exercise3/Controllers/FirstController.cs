@@ -6,6 +6,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Xml;
+using System.Net;
 
 // path lon /position/longitude-deg
 // path lan /position/latitude-deg
@@ -27,6 +28,14 @@ namespace Exercise3.Controllers
         [HttpGet]
         public ActionResult displayPicture(string ip, int port)
         {
+            //check if its the right action
+            IPAddress clientIpAddr;
+            bool success = IPAddress.TryParse(ip, out clientIpAddr);
+            //if its not ip address
+            if (!success)
+            {
+                return RedirectToAction("DisplayLoadData", new { fileName = ip,time = port });
+            }
             //need to save ip and port
             TcpCommands.Instance.ip = ip;
             TcpCommands.Instance.port = port;
@@ -77,7 +86,15 @@ namespace Exercise3.Controllers
 
             return View();
         }
+       
 
+        //second mission - draw the way of the plane on the map
+        [HttpGet]
+        public ActionResult DisplayLoadData(string fileName,int time)
+        {
+            
+            return View();
+        }
         //gets a data from the simulator with gets commands 
         [HttpPost]
         public string GetFlyInfo()
@@ -168,8 +185,7 @@ namespace Exercise3.Controllers
             return sb.ToString();
         }
 
-        // POST: First/Search
-        /*[HttpPost]
+      /*[HttpPost]
         public string Search(string name)
         {
             InfoModel.Instance.ReadData(name);

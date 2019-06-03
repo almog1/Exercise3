@@ -125,6 +125,7 @@
     <Content Include="Views\First\displayWay.cshtml" />
     <Content Include="Views\First\displayFile.cshtml" />
     <Content Include="Views\First\connectServer.cshtml" />
+    <Content Include="Views\First\DisplayLoadData.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
