@@ -22,97 +22,55 @@ namespace Exercise3.Controllers
             return View();
         }
 
-
-        //first mission - gets a point and draw it on the map
         [HttpGet]
-        public ActionResult displayPicture(string ip, int port)
+        public ActionResult display(string ip, int port, int time)
         {
-            //need to save ip and port
-            TcpCommands.Instance.ip = ip;
-            TcpCommands.Instance.port = port;
+            InfoModel.Instance.ip = ip;
+            InfoModel.Instance.port = port.ToString();
+            InfoModel.Instance.time = time;
 
-            //need to check if we connected already 
-            TcpCommands.Instance.ConnectToServer();
-
-            //saves alements in viewBag
-            ViewBag.Lon = TcpCommands.Instance.GetValues(FlyInformation.LON_PATH);
-            ViewBag.Lat = TcpCommands.Instance.GetValues(FlyInformation.LAT_PATH);
-            
+            Session["time"] = time;
+        
             return View();
         }
 
-        //second mission - draw the way of the plane on the map
+        //first mission - gets a point and draw it on the map
         [HttpGet]
         public ActionResult connectServer(string ip, int port)
         {
             TcpCommands.Instance.ip = ip;
             TcpCommands.Instance.port = port;
-            // TcpCommands.Instance.time = time;
+           // TcpCommands.Instance.time = time;
 
             TcpCommands.Instance.ConnectToServer();
-        //    TcpCommands.Instance.GetValues(FlyInformation.LON_PATH);
-          //  TcpCommands.Instance.GetValues(FlyInformation.LAT_PATH);
+            TcpCommands.Instance.GetValues(FlyInformation.LON_PATH);
+            TcpCommands.Instance.GetValues(FlyInformation.LAT_PATH);
 
-            //InfoModel.Instance.ReadData("Dor");
+           //InfoModel.Instance.ReadData("Dor");
 
-              Session["time"] = 4;
+          //  Session["time"] = time;
 
             return View();
         }
 
         [HttpGet]
-        public ActionResult displayWay(string ip, int port, int time)
+        public ActionResult displayPicture(string ip, string port)
         {
-            //infoModel - connection with the simulator (the communication with the simulator)
-            // InfoModel.Instance.ip = ip;
-            // InfoModel.Instance.port = port.ToString();
-            // InfoModel.Instance.time = time;
-            TcpCommands.Instance.ip = ip;
-            TcpCommands.Instance.port = port;
-            TcpCommands.Instance.ConnectToServer();
-
-            //ViewBag.Lon = -157;
-            //ViewBag.Lat = 21;
-            Session["time"] = time;
-
+           
             return View();
         }
 
-        //gets a data from the simulator with gets commands 
         [HttpPost]
-        public string GetFlyInfo()
+        public string GetEmployee()
         {
-            var info = TcpCommands.Instance.flyInformation;
+            var emp = InfoModel.Instance.Employee;
 
-            if (TcpCommands.Instance.IsConnect == false)
-            {
-               // TcpCommands.Instance.ConnectToServer();
-            }
-            else
-            {
+            emp.Salary = rnd.Next(1000);
 
-                info.lon = TcpCommands.Instance.GetValues(FlyInformation.LON_PATH);
-                info.lat = TcpCommands.Instance.GetValues(FlyInformation.LAT_PATH);
-            }
-       /*     info.lon = info.lon - 20;
-            if(info.lon < -180)
-            {
-                info.lon = -30;
-            }
-            info.lat = info.lat + 15;
-            if (info.lat>90)
-            {
-                info.lat = 10;
-            }
-            */
-
-          //  ViewBag.lon = TcpCommands.Instance.GetValues(FlyInformation.LON_PATH);
-           // ViewBag.lat = 
-
-            return FlyInfoToXml(info);
+            return ToXml(emp);
         }
 
-        private string FlyInfoToXml(FlyInformation info)
+        private string ToXml(Employee employee)
         {
             //Initiate XML stuff
             StringBuilder sb = new StringBuilder();
@@ -120,46 +78,9 @@ namespace Exercise3.Controllers
             XmlWriter writer = XmlWriter.Create(sb, settings);
 
             writer.WriteStartDocument();
-            writer.WriteStartElement("FlyInfo");
+            writer.WriteStartElement("Employess");
 
-            info.ToXml(writer);
-
-            writer.WriteEndElement();
-            writer.WriteEndDocument();
-            writer.Flush();
-            return sb.ToString();
-        }
-
-        [HttpPost]
-        public string GetMessageFromSimulator() { 
-            //call to a function in the command channel that gets the values from the simulator
-
-            Random rnd = new Random();
-            double lon = rnd.Next(1, 50);
-            double lat = rnd.Next(1, 50);
-
-            //todo :to change and need to send throttle and rudder???
-            return ToXml(lon, lat, 0, 0);
-        }
-
-        //write the values of lon and lat to a format of xml
-        private string ToXml(double lon, double lat, double throttle, double rudder)
-        {
-            //Initiate XML stuff
-            StringBuilder sb = new StringBuilder();
-            XmlWriterSettings settings = new XmlWriterSettings();
-            XmlWriter writer = XmlWriter.Create(sb, settings);
-
-            writer.WriteStartDocument();
-            writer.WriteStartElement("Location");
-
-            //writer.WriteElementString("Lon", InfoModel.Lon.ToString());
-            //writer.WriteElementString("Lat", InfoModel.Lat.ToString());
-            writer.WriteElementString("newVar", lon.ToString());
-            writer.WriteElementString("Lon",lon.ToString());
-            writer.WriteElementString("Lat", lon.ToString());
-            //writer.WriteElementString("Throttle", lon.ToString());
-            //writer.WriteElementString("Rudder", lon.ToString());
+            employee.ToXml(writer);
 
             writer.WriteEndElement();
             writer.WriteEndDocument();
@@ -168,13 +89,13 @@ namespace Exercise3.Controllers
         }
 
         // POST: First/Search
-        /*[HttpPost]
+        [HttpPost]
         public string Search(string name)
         {
             InfoModel.Instance.ReadData(name);
 
             return ToXml(InfoModel.Instance.Employee);
-        }*/
+        }
 
     }
 }
