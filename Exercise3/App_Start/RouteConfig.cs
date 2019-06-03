@@ -24,6 +24,9 @@ namespace Exercise3
             routes.MapRoute("display", "display/{ip}/{port}/{time}",
             defaults: new { controller = "First", action = "displayWay" });
 
+            routes.MapRoute("save", "save/{ip}/{port}/{time}/{seconds}/{fileName}",
+           defaults: new { controller = "First", action = "saveData" });
+
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",

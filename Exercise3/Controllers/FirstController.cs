@@ -87,7 +87,6 @@ namespace Exercise3.Controllers
             return View();
         }
        
-
         //second mission - draw the way of the plane on the map
         [HttpGet]
         public ActionResult DisplayLoadData(string fileName,int time)
@@ -95,6 +94,15 @@ namespace Exercise3.Controllers
             
             return View();
         }
+
+        //second mission - draw the way of the plane on the map
+        [HttpGet]
+        public ActionResult SaveData(string ip,int port, int time,
+                                      int seconds,string fileName)
+        {
+            return View();
+        }
+
         //gets a data from the simulator with gets commands 
         [HttpPost]
         public string GetFlyInfo()
