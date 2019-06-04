@@ -5,3 +5,90 @@
 
 <h2>SaveData</h2>
 
+<script src="Scripts/jquery-3.2.1.js"></script>
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="Scripts/bootstrap.js"></script>
+<!DOCTYPE html>
+<html>
+<body background="~/export-map-share.png" style="background-size:100% 100%; background-attachment:fixed">
+    <canvas id="myCanvas" style="background-size:100% 100%; top:0; left:0; margin:0"></canvas>
+    <script>
+      var c = document.getElementById("myCanvas");
+        c.width = window.innerWidth;
+        c.height = window.innerHeight;
+        c.style.position = "absolute";
+        var ctx = c.getContext("2d");
+        var IntervalTime = @Session["time"] * 1000 ;  // the time that we get the lot&lat values from simulator
+        var TimeoutT = @Session["seconds"] * 1000;
+
+        var file = "@ViewBag.FileName";
+         //put the file name from the view bag in the input for the function
+        var input = {
+            fileName:file,
+        };
+
+        var count = 0;
+
+        var isStartPoint = 1; // bool var if that point is the first point
+        var oldNormalizedLon;
+        var oldNormalizedLat;
+
+        myTimer = (function () {
+        $.post("@Url.Action("GetFlyFullInfo")",input).done(function (xml) {
+                var xmlDoc = $.parseXML(xml),
+                $xml = $(xmlDoc),
+                LONVAL = $xml.find("LonInfo").text();
+                lon = parseFloat(LONVAL);
+                LATVAL = $xml.find("LatInfo").text();
+                lat = parseFloat(LATVAL);
+
+                var newNormalizedLon = ((lon + 180) * (c.width / 360));
+                var newNormalizedLat = ((lat + 90) * (c.height / 180));
+
+            if (isStartPoint) {
+                isStartPoint = 0;
+                ctx.beginPath();
+                ctx.lineWidth = 2;
+                ctx.arc(newNormalizedLon, newNormalizedLat, 6, 0, Math.PI * 2);
+                ctx.fillStyle = "Red";
+                ctx.fill();
+                ctx.strokeStyle = "Black";
+                ctx.stroke();
+                ctx.closePath();
+                oldNormalizedLat = newNormalizedLat;
+                oldNormalizedLon = newNormalizedLon;
+            } else {
+                ctx.beginPath();
+                ctx.lineWidth = 2;
+                ctx.lineJoin = 'round';
+                ctx.moveTo(oldNormalizedLon, oldNormalizedLat);
+                ctx.lineTo(newNormalizedLon, newNormalizedLat);
+                ctx.strokeStyle = "Red";
+                ctx.stroke();
+                ctx.closePath();
+
+                oldNormalizedLat = newNormalizedLat;
+                oldNormalizedLon = newNormalizedLon;
+            }
+            
+
+        });
+        });
+
+        timeout = (function () {
+            clearInterval(MyInterval)
+            alert("Done!");
+        });
+
+        setTimeout(timeout, TimeoutT);
+        var MyInterval = setInterval(myTimer, IntervalTime);
+        myTimer();
+        
+       // window.onbeforeunload = function () {
+         //   $.(@Url.Action("CloseClient"))
+           // return null;
+      //  };
+
+    </script>
+</body>
+</html>

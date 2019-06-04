@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Web;
 using System.Threading;
 using System.Text;
+using System.IO;
 
 namespace Exercise3.Models
 {
@@ -38,8 +39,6 @@ namespace Exercise3.Models
             IsConnect = false;
             flyInformation = new FlyInformation();
 
-            flyInformation.lon = -157;
-            flyInformation.lat = 21;
         }
 
         private bool _isConnect;
@@ -70,7 +69,7 @@ namespace Exercise3.Models
         //function to connect the server
         public void ConnectToServer()
         {
-            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip),port);
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
             try
             {
                 //open new client
@@ -78,7 +77,7 @@ namespace Exercise3.Models
                 Client = new TcpClient();
                 Client.Connect(ep); //connecting as client to the server
                                     //change to connected
-                //Client.Connected          check if conected??
+                                    //Client.Connected          check if conected??
                 IsConnect = true; //succed to connect
             }
             catch (SocketException)
@@ -98,7 +97,8 @@ namespace Exercise3.Models
                 //open thread for get lat & lon
                 //new Thread(() =>
                 // {
-                try {
+                try
+                {
                     byte[] sendBuffer = new byte[1024];
                     byte[] getBuffer = new byte[1024];
                     int readed = 0;
@@ -115,29 +115,58 @@ namespace Exercise3.Models
 
                     readed = stream.Read(getBuffer, 0, getBuffer.Length);
                     string received = Encoding.ASCII.GetString(getBuffer, 0, readed);
-                    Console.WriteLine("Response from client: {0}", received);
-                    //     string[] words = received.Split(' ');
                     string[] wordsSecond = received.Split('\'');
 
                     val = Convert.ToDouble(wordsSecond[1]);
-                    //do
-                    // {
-                    //     int read = stream.Read(getBuffer, readed, getBuffer.Length - readed);
-                    //   readed += read;
-                    // } while (Client.GetStream().DataAvailable);
-                    //  Thread.Sleep(2000);
 
-                    //}).Start();
                 }
                 catch (Exception e)
                 {
                     //close the connetion
                     Client.Close();
                     IsConnect = false;
-                 
+
                 }
-               }
+            }
             return val;
         }
+
+        //the name of the text with the data from the simulator
+        public const string SCENARIO_FILE = "~/App_Data/{0}.txt";           // The Path of the Secnario
+
+        //save the data from the file
+        public void WriteData(string fileName)
+        {
+            string path = HttpContext.Current.Server.MapPath(String.Format(SCENARIO_FILE, fileName));
+
+            //write the data to the file
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(path, true))
+            {
+                file.WriteLine(flyInformation.lon);
+                file.WriteLine(flyInformation.lat);
+                file.WriteLine(flyInformation.rudder);
+                file.WriteLine(flyInformation.throttle);
+            }
+        }
+
+        //read the data from the file
+        public void ReadData(string fileName, int count)
+        {
+            //get count which is the line to read from
+            string path = HttpContext.Current.Server.MapPath(String.Format(SCENARIO_FILE, fileName));
+            //check if the file exist
+            if (File.Exists(path))
+            {
+                string[] lines = System.IO.File.ReadAllLines(path);
+                //need to write two lines
+                if ((count + 1) < lines.Length)
+                {
+                    flyInformation.lon = double.Parse(lines[count]);
+                    flyInformation.lat = double.Parse(lines[count + 1]);
+                }
+            }
+        }
+
+
     }
 }
