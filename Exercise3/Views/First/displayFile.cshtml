@@ -22,39 +22,47 @@
         var isStartPoint = 1; // bool var if that point is the first point
         var oldNormalizedLon;
         var oldNormalizedLat;
-        myTimer = (function () {
-            $.post("@Url.Action("GetMessageFromSimulator")").done(function (xml){ //in post the data is in the string that returns from the function "getMessFromClient"
-                var xmlDoc = $.parseXML(xml), $xml = $(xmlDoc);
-                lon = $xml.find("Lon").text();
-                lon = parseFloat(lon);
-                lat = $xml.find("Lat").text();
-                lat = parseFloat(lat);
+         myTimer = (function () {
+        $.post( "@Url.Action("GetFlyInfo")").done(function (xml) {
+                var xmlDoc = $.parseXML(xml),
+                $xml = $(xmlDoc),
+                LONVAL = $xml.find("LonInfo").text();
+                lon = parseFloat(LONVAL);
+                LATVAL = $xml.find("LatInfo").text();
+                lat = parseFloat(LATVAL);
+
                 var newNormalizedLon = ((lon + 180) * (c.width / 360));
                 var newNormalizedLat = ((lat + 90) * (c.height / 180));
-                if (isStartPoint) {
-                    isStartPoint = 0;
-                    ctx.beginPath();
-                    ctx.lineWidth = 2;
-                    ctx.arc(normalizedLon, normalizedLat, 6, 0, Math.PI * 2);
-                    ctx.fillStyle = "Red";
-                    ctx.fill();
-                    ctx.strokeStyle = "Black";
-                    ctx.stroke();
-                    ctx.closePath();
-                    oldNormalizedLat = newNormalizedLat;
-                    oldNormalizedLon = newNormalizedLon;
-                } else {
-                    ctx.beginPath();
-                    ctx.lineWidth = 2;
-                    ctx.lineJoin = 'round';
-                    ctx.moveTo(oldNormalizedLon, oldNormalizedLat);
-                    ctx.lineTo(newNormalizedLon, newNormalizedLat);
 
-                    ctx.strokeStyle = "Red";
-                    ctx.stroke();
-                    ctx.closePath();
-                }
-            });
+            if (isStartPoint) {
+                isStartPoint = 0;
+                ctx.beginPath();
+                ctx.lineWidth = 2;
+                ctx.arc(newNormalizedLon, newNormalizedLat, 6, 0, Math.PI * 2);
+                ctx.fillStyle = "Red";
+                ctx.fill();
+                ctx.strokeStyle = "Black";
+                ctx.stroke();
+                ctx.closePath();
+                oldNormalizedLat = newNormalizedLat;
+                oldNormalizedLon = newNormalizedLon;
+            } else {
+                ctx.beginPath();
+                ctx.lineWidth = 2;
+                ctx.lineJoin = 'round';
+                ctx.moveTo(oldNormalizedLon, oldNormalizedLat);
+                ctx.lineTo(newNormalizedLon, newNormalizedLat);
+                ctx.strokeStyle = "Red";
+                ctx.stroke();
+                ctx.closePath();
+
+                oldNormalizedLat = newNormalizedLat;
+                oldNormalizedLon = newNormalizedLon;
+            }
+
+
+
+        });
         });
 
         timeout = (function () {
