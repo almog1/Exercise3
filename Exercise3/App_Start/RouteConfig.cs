@@ -16,13 +16,10 @@ namespace Exercise3
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute("displayPicture", "display/{ip}/{port}",
-            defaults: new { controller = "First", action = "displayPicture" });
-
-            routes.MapRoute("connectServer", "displayConn/{ip}/{port}",
-            defaults: new { controller = "First", action = "connectServer" });
-
+            defaults: new { controller = "First", action = "DisplayPicture" });
+            
             routes.MapRoute("display", "display/{ip}/{port}/{time}",
-            defaults: new { controller = "First", action = "displayWay" });
+            defaults: new { controller = "First", action = "DisplayWay" });
 
             routes.MapRoute("save", "save/{ip}/{port}/{time}/{seconds}/{fileName}",
            defaults: new { controller = "First", action = "SaveData" });
@@ -30,7 +27,7 @@ namespace Exercise3
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "First", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "First", action = "Home", id = UrlParameter.Optional }
             );
         }
     }

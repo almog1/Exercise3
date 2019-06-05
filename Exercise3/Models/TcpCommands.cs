@@ -11,7 +11,6 @@ using System.IO;
 namespace Exercise3.Models
 {
     //here the connection to the simulator
-    //send message "get" to take information
     public class TcpCommands
     {
         private static TcpCommands s_instace = null;
@@ -33,12 +32,12 @@ namespace Exercise3.Models
         public int time { get; set; }
         public FlyInformation flyInformation { get; private set; }
 
+        //constructor for a new TCP
         private TcpCommands()
         {
             //cretae new tcp commands - one time
             IsConnect = false;
             flyInformation = new FlyInformation();
-
         }
 
         private bool _isConnect;
@@ -73,18 +72,15 @@ namespace Exercise3.Models
             try
             {
                 //open new client
-
                 Client = new TcpClient();
                 Client.Connect(ep); //connecting as client to the server
                                     //change to connected
-                                    //Client.Connected          check if conected??
                 IsConnect = true; //succed to connect
             }
             catch (SocketException)
             {
-                Console.WriteLine("FAILED CONNECT COMMAND");
+
             }
-            //  Console.WriteLine("connect in command channel");
         }
 
         //get values from the server
@@ -95,8 +91,6 @@ namespace Exercise3.Models
             if (IsConnect == true)
             {
                 //open thread for get lat & lon
-                //new Thread(() =>
-                // {
                 try
                 {
                     byte[] sendBuffer = new byte[1024];
@@ -122,17 +116,19 @@ namespace Exercise3.Models
                 }
                 catch (Exception e)
                 {
-                    //close the connetion
-                    Client.Close();
                     IsConnect = false;
-
+                    //close the connetion
+                    if (Client != null)
+                    {
+                        Client.Close();
+                    }
                 }
             }
             return val;
         }
 
         //the name of the text with the data from the simulator
-        public const string SCENARIO_FILE = "~/App_Data/{0}.txt";           // The Path of the Secnario
+        public const string SCENARIO_FILE = "~/App_Data/{0}.txt";
 
         //save the data from the file
         public void WriteData(string fileName)
@@ -149,6 +145,16 @@ namespace Exercise3.Models
             }
         }
 
+        public void CloseClient()
+        {
+           // flyInformation = new FlyInformation();
+            IsConnect = false;
+            //check if null - can close it
+            if (Client != null)
+            {
+                Client.Close();
+            }
+        }
         //read the data from the file
         public void ReadData(string fileName, int count)
         {

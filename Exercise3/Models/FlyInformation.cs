@@ -6,6 +6,7 @@ using System.Xml;
 
 namespace Exercise3.Models
 {
+    //save the currnt fly information
     public class FlyInformation
     {
         public double lon { get; set; }
@@ -13,11 +14,13 @@ namespace Exercise3.Models
         public double rudder { get; set; }
         public double throttle { get; set; }
 
+        //full paths in the simulator
         public const string LON_PATH = "/position/longitude-deg";
         public const string LAT_PATH = "/position/latitude-deg";
         public const string RUDDER_PATH = "/controls/flight/rudder";
         public const string THROTTLE_PATH = "/controls/engines/current-engine/throttle";
 
+        //convert data to xml
         public void ToXml(XmlWriter writer)
         {
             writer.WriteStartElement("MyFly");

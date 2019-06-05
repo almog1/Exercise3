@@ -8,92 +8,97 @@ using System.Web.Mvc;
 using System.Xml;
 using System.Net;
 
-// path lon /position/longitude-deg
-// path lan /position/latitude-deg
-
 namespace Exercise3.Controllers
 {
     public class FirstController : Controller
     {
-        private static Random rnd = new Random();
-
-        // GET: First
-        public ActionResult Index()
+        /**
+         * The index is the default page
+        **/
+        public ActionResult Home()
         {
             return View();
         }
 
 
         //first mission - gets a point and draw it on the map
+        /**
+         * This action diaplay the current point of the plain .
+         * get ip and port of the simulator
+         **/
         [HttpGet]
-        public ActionResult displayPicture(string ip, int port)
+        public ActionResult DisplayPicture(string ip, int port)
         {
             //check if its the right action
             IPAddress clientIpAddr;
             bool success = IPAddress.TryParse(ip, out clientIpAddr);
-            //if its not ip address
+            //if its not ip address - send to other action
             if (!success)
             {
-                return RedirectToAction("DisplayLoadData", new { fileName = ip,time = port });
+                return RedirectToAction("DisplayLoadData", new { fileName = ip, time = port });
             }
+            //close if was old client
+            TcpCommands.Instance.CloseClient();
+
             //need to save ip and port
             TcpCommands.Instance.ip = ip;
             TcpCommands.Instance.port = port;
-
             //need to check if we connected already 
             TcpCommands.Instance.ConnectToServer();
 
-            //saves alements in viewBag
-            ViewBag.Lon = TcpCommands.Instance.GetValues(FlyInformation.LON_PATH);
-            ViewBag.Lat = TcpCommands.Instance.GetValues(FlyInformation.LAT_PATH);
+            if (TcpCommands.Instance.IsConnect)
+            {
+                //saves alements in viewBag
+                ViewBag.Lon = TcpCommands.Instance.GetValues(FlyInformation.LON_PATH);
+                ViewBag.Lat = TcpCommands.Instance.GetValues(FlyInformation.LAT_PATH);
+            }
 
             return View();
         }
-
-        //second mission - draw the way of the plane on the map
+        
+        /**
+         * Display the path that the plain id flying at
+         * By taking points of lon&lan from the simultor .
+         * Draw the point once in $time seconds
+         * 
+         **/
         [HttpGet]
-        public ActionResult connectServer(string ip, int port)
+        public ActionResult DisplayWay(string ip, int port, int time)
         {
+            //close if was old client
+            TcpCommands.Instance.CloseClient();
+            //save the ip,port, time
             TcpCommands.Instance.ip = ip;
             TcpCommands.Instance.port = port;
             TcpCommands.Instance.ConnectToServer();
-
-            return View();
-        }
-
-        [HttpGet]
-        public ActionResult displayWay(string ip, int port, int time)
-        {
-            //infoModel - connection with the simulator (the communication with the simulator)
-            // InfoModel.Instance.ip = ip;
-            // InfoModel.Instance.port = port.ToString();
-            // InfoModel.Instance.time = time;
-            TcpCommands.Instance.ip = ip;
-            TcpCommands.Instance.port = port;
-            TcpCommands.Instance.ConnectToServer();
-
-            //ViewBag.Lon = -157;
-            //ViewBag.Lat = 21;
+            //save it for the view
             Session["time"] = time;
 
             return View();
         }
-       
-        //second mission - draw the way of the plane on the map
+
+        /**
+         * Load the path of the plain from the file .
+         * Display it as annimation .
+         * **/
         [HttpGet]
-        public ActionResult DisplayLoadData(string fileName,int time)
+        public ActionResult DisplayLoadData(string fileName, int time)
         {
             Session["time"] = time;
             ViewBag.file = fileName;
-
             return View();
         }
 
-        //second mission - draw the way of the plane on the map
+        /**
+         * Save the points where the plain is .
+         * Save in fileName at app_data and draw it
+         **/
         [HttpGet]
-        public ActionResult SaveData(string ip,int port, int time,
-                                      int seconds,string fileName)
+        public ActionResult SaveData(string ip, int port, int time,
+                                      int seconds, string fileName)
         {
+            //close if was old client
+            TcpCommands.Instance.CloseClient();
             //need to save ip and port
             TcpCommands.Instance.ip = ip;
             TcpCommands.Instance.port = port;
@@ -101,34 +106,39 @@ namespace Exercise3.Controllers
             Session["time"] = time;
             Session["seconds"] = seconds;
             ViewBag.FileName = fileName;
-
-            //need to check if connected 
-            if (TcpCommands.Instance.IsConnect)
-            {
-                
-            }
+            
             return View();
         }
 
-        //gets a data from the simulator with gets commands 
+        /**
+         * Get The info of the fly from the simulator .
+         * return string by convert the details to xml
+         **/
         [HttpPost]
         public string GetFlyInfo()
         {
             var info = TcpCommands.Instance.flyInformation;
-
-            if (TcpCommands.Instance.IsConnect == false)
+            double lon, lat;
+            
+            if(TcpCommands.Instance.IsConnect)
             {
-                // TcpCommands.Instance.ConnectToServer();
-            }
-            else
-            {
-
-                info.lon = TcpCommands.Instance.GetValues(FlyInformation.LON_PATH);
-                info.lat = TcpCommands.Instance.GetValues(FlyInformation.LAT_PATH);
+                lon = TcpCommands.Instance.GetValues(FlyInformation.LON_PATH);
+                lat = TcpCommands.Instance.GetValues(FlyInformation.LAT_PATH);
+                //check if connect or failed
+                if (TcpCommands.Instance.IsConnect)
+                {
+                    info.lon = lon;
+                    info.lat = lat;
+                }
+                //if not connect - keep the old values
             }
             return FlyInfoToXml(info);
         }
 
+        /**
+         * Convert the FLyinformation to xml
+         * so the view can read its values
+         **/
         private string FlyInfoToXml(FlyInformation info)
         {
             //Initiate XML stuff
@@ -146,90 +156,53 @@ namespace Exercise3.Controllers
             writer.Flush();
             return sb.ToString();
         }
+        /**
+         * Get the full information and write it to the file
+         **/
         [HttpPost]
         public string GetFlyFullInfo(string fileName)
         {
             var info = TcpCommands.Instance.flyInformation;
-
-            if (TcpCommands.Instance.IsConnect == false)
+            double lon, lat,rudder,throttle;
+            //check if connect to simulator
+            if (TcpCommands.Instance.IsConnect)
             {
-                // TcpCommands.Instance.ConnectToServer();
+                lon = TcpCommands.Instance.GetValues(FlyInformation.LON_PATH);
+                lat = TcpCommands.Instance.GetValues(FlyInformation.LAT_PATH);
+                rudder = TcpCommands.Instance.GetValues(FlyInformation.RUDDER_PATH);
+                throttle = TcpCommands.Instance.GetValues(FlyInformation.THROTTLE_PATH);
+                //check if connect or failed
+                if (TcpCommands.Instance.IsConnect)
+                {
+                    info.lon = lon;
+                    info.lat = lat;
+                    info.rudder = rudder;
+                    info.throttle = throttle;
+                    TcpCommands.Instance.WriteData(fileName);
+                }
+                //if not connect - keep the old values
             }
-            else
-            {
-                info.lon = TcpCommands.Instance.GetValues(FlyInformation.LON_PATH);
-                info.lat = TcpCommands.Instance.GetValues(FlyInformation.LAT_PATH);
-                info.rudder = TcpCommands.Instance.GetValues(FlyInformation.RUDDER_PATH);
-                info.throttle = TcpCommands.Instance.GetValues(FlyInformation.THROTTLE_PATH);
-                //write the data to the file
-                TcpCommands.Instance.WriteData(fileName);
-            }
+            
             return FlyInfoToXml(info);
         }
 
+        /**
+         * Read the information from the file .
+         * count for know in which line need to send info from
+         **/
         [HttpPost]
-        public string ReadFlyInfo(string fileName,int count)
+        public string ReadFlyInfo(string fileName, int count)
         {
             //read the data from the file
+            //update the Tcp.Flyinformation values
             TcpCommands.Instance.ReadData(fileName, count);
+
             //take the information from the flyInformation
             var info = TcpCommands.Instance.flyInformation;
             //convert to xml
             return FlyInfoToXml(info);
         }
-
-        [HttpPost]
-        public string GetMessageFromSimulator()
-        {
-            //call to a function in the command channel that gets the values from the simulator
-
-          //  double lon = rnd.Next(-180, 180);
-          //  double lat = rnd.Next(-90, 90);
-
-            Random random = new Random();
-            double lon = random.NextDouble() * (180 - (-180)) + (-180);
-            double lat = random.NextDouble() * (90 - (-90)) + (-90);
-
-            Random random2 = new Random();
-            //between 0 - 1
-            double throttle = random.NextDouble();
-            double rudder = random.NextDouble();
-            return ToXml(lon, lat, throttle, rudder);
-        }
-
-        //write the values of lon and lat to a format of xml
-        private string ToXml(double lon, double lat, double throttle, double rudder)
-        {
-            //Initiate XML stuff
-            StringBuilder sb = new StringBuilder();
-            XmlWriterSettings settings = new XmlWriterSettings();
-            XmlWriter writer = XmlWriter.Create(sb, settings);
-
-            writer.WriteStartDocument();
-            writer.WriteStartElement("Location");
-
-            writer.WriteElementString("LonInfo", lon.ToString());
-            writer.WriteElementString("LatInfo", lat.ToString());
-            writer.WriteElementString("ThrottleInfo", throttle.ToString());
-            writer.WriteElementString("RudderInfo", rudder.ToString());
-
-            writer.WriteEndElement();
-            writer.WriteEndDocument();
-            writer.Flush();
-            return sb.ToString();
-        }
-
-        //close the client
-        public void CloseClient()
-        {
-            TcpCommands.Instance.Client.Close();
-        }
-      /*[HttpPost]
-        public string Search(string name)
-        {
-            InfoModel.Instance.ReadData(name);
-            return ToXml(InfoModel.Instance.Employee);
-        }*/
+       
 
     }
 }

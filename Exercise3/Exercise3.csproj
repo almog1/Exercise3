@@ -101,7 +101,7 @@
     <Content Include="export-map-share.png" />
     <Content Include="Simulator_web_application.png" />
     <Content Include="Web.config" />
-    <Content Include="Views\First\displayPicture.cshtml" />
+    <Content Include="Views\First\DisplayPicture.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -110,22 +110,17 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\FlyInformation.cs" />
-    <Compile Include="Models\Employee.cs" />
-    <Compile Include="Models\InfoModel.cs" />
     <Compile Include="Models\TcpCommands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
     <None Include="packages.config" />
-    <Content Include="Views\First\display.cshtml" />
-    <Content Include="Views\First\Index.cshtml" />
+    <Content Include="Views\First\Home.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
-    <Content Include="Views\First\displayWay.cshtml" />
-    <Content Include="Views\First\displayFile.cshtml" />
-    <Content Include="Views\First\connectServer.cshtml" />
+    <Content Include="Views\First\DisplayWay.cshtml" />
     <Content Include="Views\First\DisplayLoadData.cshtml" />
     <Content Include="Views\First\SaveData.cshtml" />
     <None Include="Web.Debug.config">
